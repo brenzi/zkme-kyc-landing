@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kusama Vision KYC</title>
+<link rel="stylesheet" href="zkme-style.css">
+<style>
+  :root {
+    --fg: #1a1a1a; --bg: #ffffff; --muted: #666; --line: #ddd;
+    --ok: #1a7f37; --warn: #b35900; --err: #b00020; --accent: #e6007a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #eaeaea; --bg: #141414; --muted: #9a9a9a; --line: #333;
+            --ok: #4ac26b; --warn: #e0a03d; --err: #ff6b6b; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 40rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+  h1 span { color: var(--accent); }
+  h2 { font-size: 1.05rem; margin: 2rem 0 .5rem; }
+  p, li { color: var(--fg); }
+  .muted { color: var(--muted); font-size: .9rem; }
+  label { display: block; font-weight: 600; margin: 1.5rem 0 .3rem; }
+  input[type=text] { width: 100%; box-sizing: border-box; padding: .55rem .7rem;
+    font: inherit; font-family: ui-monospace, monospace; color: var(--fg);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+  #identifier-hint { color: var(--err); font-size: .85rem; }
+  ul#curators { list-style: none; padding: 0; margin: 0; }
+  .curator { display: flex; align-items: center; gap: .8rem;
+    padding: .7rem 0; border-bottom: 1px solid var(--line); }
+  .curator button { font: inherit; padding: .5rem .9rem; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+  .curator button:not(:disabled):hover { border-color: var(--accent); }
+  .curator button:disabled { opacity: .5; cursor: default; }
+  .status[data-status=granted] { color: var(--ok); }
+  .status[data-status=missing] { color: var(--warn); }
+  .status[data-status=error] { color: var(--err); }
+  .status { font-size: .9rem; }
+  .curator.linked { border-left: 3px solid var(--accent); padding-left: .6rem; }
+  .link-note { color: var(--warn); font-size: .9rem; }
+  #check-all { margin-top: .8rem; font: inherit; font-size: .85rem;
+    background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; }
+  ol li { margin-bottom: .3rem; }
+  footer { margin-top: 3rem; font-size: .8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1><span>Kusama Vision</span> applicant verification</h1>
+  <p class="muted">Identity and residence verification for the Kusama Vision Program, via zkMe.</p>
+
+  <h2>What is verified, and nothing else</h2>
+  <ul>
+    <li>your verified <strong>name, date of birth and country</strong> (shared with the curators)</li>
+    <li>your <strong>country of residence is not embargoed</strong> (yes/no only)</li>
+    <li>you are a <strong>live person holding your own ID</strong> (yes/no only)</li>
+    <li>you have <strong>one credential per person</strong> (yes/no only)</li>
+  </ul>
+  <p class="muted">Your documents and selfie go to zkMe, never to the curators or this page.
+  This page stores nothing, has no backend, and talks only to zkMe. Sanctions screening is done
+  separately by the curators; nothing here replaces it.</p>
+
+  <h2>How it works</h2>
+  <ol>
+    <li>Enter the <strong>payout address from your proposal</strong> below. It links your
+        verification to your application; use exactly the same address.</li>
+    <li>Each curator verifies applicants independently, so complete the verification
+        <strong>once per curator</strong>. The first run takes a few minutes (ID scan and selfie
+        in the zkMe flow); later runs reuse your zkMe credential and take seconds.</li>
+    <li>When every row shows <strong>✓ verified</strong>, tell the curators in your Matrix room.</li>
+  </ol>
+
+  <p class="muted">Each curator sends you a personal verification link in your Matrix room;
+  this page cannot start a verification without one. Opening a link shows that curator's
+  button, with your address and session already filled in; repeat with each curator's link.</p>
+
+  <label for="identifier" id="identifier-label">Payout address (must match your proposal)</label>
+  <input type="text" id="identifier" spellcheck="false" autocomplete="off"
+         placeholder="Kusama address, e.g. FiH8U…">
+  <p id="identifier-hint" hidden>This does not look like a valid address; paste it exactly as in your proposal.</p>
+
+  <h2>Verify with each curator</h2>
+  <p id="link-note" class="link-note" hidden></p>
+  <ul id="curators"></ul>
+  <button id="check-all">re-check status</button>
+
+  <footer>
+    <p>Operated by the Kusama Vision curators. Questions: ask in your applicant Matrix room.
+    zkMe's <a href="https://zk.me/app-privacy-policies">privacy policy</a> applies to the
+    verification flow itself.</p>
+  </footer>
+</main>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
