@@ -27,9 +27,9 @@ window.KYC_CONFIG = {
       apiKey: '',
     },
     {
-      name: 'Curator 2',
-      appId: '',
-      programNo: '',
+      name: 'northvane',
+      appId: 'M2026082733075865663019032178252',
+      programNo: '202608270001',
       tokenEndpoint: '',
     },
     {

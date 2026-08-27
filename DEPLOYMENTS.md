@@ -7,3 +7,5 @@ screening procedure (CID history). Format: `- <date> `CID``.
 - 2026-08-26 `bafybeigquizqqpajzrp4br7mesgzc4ztwg3vk5mrpjccugnneghkmafrc4`
 - 2026-08-26 `bafybeigquizqqpajzrp4br7mesgzc4ztwg3vk5mrpjccugnneghkmafrc4`
 - 2026-08-26 `bafybeicerfy6xfnieol4qefgcrwtwepofcx327seskzvqft7bllqixxqim`
+- 2026-08-27 `bafybeidklv3aaypvzvr2w2qwif3juefj5wu42otu7npk4hge4hffjodvyu`
+- 2026-08-27 `bafybeidklv3aaypvzvr2w2qwif3juefj5wu42otu7npk4hge4hffjodvyu`

@@ -40,6 +40,8 @@ a personal link; that is the only supported token flow. Copy `.env.example` to
 `.env` (git-ignored), fill in your API key, mchNo and curator name, then:
 
 ```
+node mint-link.mjs --new-id
+# kv6b1b464bebab81eda239b8bd
 node mint-link.mjs <verification-id>
 ```
 
