@@ -9,18 +9,26 @@ identity + residence only, sanctions screening stays with the curators.
 ## Architecture, in short
 
 - No backend. The page renders nothing unless opened via a personal link
-  `#c=<curator name>&t=<accessToken>&a=<payout address>`; the fragment never
-  reaches any server. One button per link, for exactly that curator.
-- Applicant identity binding: the payout address (SS58) is passed to zkMe as
-  the "unique identifier" in email-login mode; no wallet connect, no on-chain
-  mint, so `chainId` in config is arbitrary and the delegate-transaction
-  provider methods are unimplemented on purpose.
+  `#c=<curator name>&t=<accessToken>&id=<verification id>`; the fragment never
+  reaches any server. Only that curator's steps are shown (identity program,
+  plus residence program when `poaProgramNo` is set; zkMe cannot combine zkKYC
+  and PoA in one program).
+- Identity binding: each beneficial owner gets a random verification ID
+  (`kv` + 24 hex, `mint-link.mjs --new-id`), which is the zkMe "unique
+  identifier" in email-login mode; no wallet connect, no on-chain mint, so
+  `chainId` in config is arbitrary and the delegate-transaction provider
+  methods are unimplemented on purpose. The ID-to-person mapping is fixed by a
+  wallet-signed declaration naming all beneficial owners and their IDs,
+  verified by every curator BEFORE links are minted; a payout address can have
+  several beneficial owners and each passes KYC under their own ID.
 - `config.public.js` (repo root, tracked, secrets forbidden) is the single
   source of runtime config. `scripts/deploy.sh` stages it as `config.js`;
   `dist/` is disposable build output. Editing `dist/config.js` does not
   survive a deploy.
 - Tokens are minted locally by each curator (`mint-link.mjs` + `.env`), never
-  by the page. The config fields `accessToken`/`tokenEndpoint`/`apiKey` exist
+  by the page. Order: IDs handed out, signed declaration verified, then links
+  minted. The page never checks wallet ownership; the signed declaration does,
+  and the opaque ID makes squatting meaningless. The config fields `accessToken`/`tokenEndpoint`/`apiKey` exist
   in `src/app.js` but stay empty; `deploy.sh` refuses to publish a config
   containing a secret.
 
@@ -51,6 +59,15 @@ identity + residence only, sanctions screening stays with the curators.
 - **Program lifecycle.** Dashboard: create program -> click the record ->
   Activate/"Apply program" (self-serve, no zkMe human review) -> short
   automated on-chain configuration window -> live.
+- **Cooperator results are booleans only.** `POST https://agw.zk.me/zkseradmin/openapi/queryKycInfoByAddress`
+  (`{mchNo, apiKey, programNo, account, chainId}`; chainId decimal/named like
+  `137`, hex rejected; response `data` is an ARRAY) returns `kycStatus` +
+  `verifierValues.{sanction,age,citizenship,location,unique}`;
+  `.../queryPoAInfoByAddress` returns `countryRegion` (passes jurisdiction
+  policy). No name/DOB/country values exist in the self-serve product; the SD
+  operator (code 16) in their credential system could disclose values but is
+  not exposed to cooperators (ask contact@zk.me). `query-results.mjs` wraps
+  both endpoints. Also `.../kyc/getUsersList` lists users per program.
 - **Public status endpoint** (no auth; good for debugging config):
   `POST https://nest-api.zk.me/api/grant/check_v2` with
   `{userAccount, programNo, appId}` -> `{code: 80000000, data: {isGrant, ...}}`.

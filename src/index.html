@@ -65,22 +65,28 @@
 
   <h2>How it works</h2>
   <ol>
-    <li>Enter the <strong>payout address from your proposal</strong> below. It links your
-        verification to your application; use exactly the same address.</li>
+    <li>The curators assign every beneficial owner of a proposal a personal
+        <strong>verification ID</strong> (a random code starting with <code>kv</code>) after the
+        signed declaration in your Matrix room. Your link carries your ID; it links your
+        verification to your application and contains no personal data.</li>
     <li>Each curator verifies applicants independently, so complete the verification
-        <strong>once per curator</strong>. The first run takes a few minutes (ID scan and selfie
-        in the zkMe flow); later runs reuse your zkMe credential and take seconds.</li>
+        <strong>once per curator</strong>, in <strong>two steps</strong>: an identity check
+        (ID scan and selfie) and a residence check (a proof-of-address document not older
+        than 90 days, e.g. a utility bill or bank statement). The first identity run takes a
+        few minutes; later runs reuse your zkMe credential and take seconds. Do the identity
+        step before the residence step.</li>
     <li>When every row shows <strong>✓ verified</strong>, tell the curators in your Matrix room.</li>
   </ol>
 
   <p class="muted">Each curator sends you a personal verification link in your Matrix room;
   this page cannot start a verification without one. Opening a link shows that curator's
-  button, with your address and session already filled in; repeat with each curator's link.</p>
+  steps, with your verification ID and session already filled in; repeat with each
+  curator's link.</p>
 
-  <label for="identifier" id="identifier-label">Payout address (must match your proposal)</label>
+  <label for="identifier" id="identifier-label">Verification ID (assigned in your Matrix room)</label>
   <input type="text" id="identifier" spellcheck="false" autocomplete="off"
-         placeholder="Kusama address, e.g. FiH8U…">
-  <p id="identifier-hint" hidden>This does not look like a valid address; paste it exactly as in your proposal.</p>
+         placeholder="kv…">
+  <p id="identifier-hint" hidden>This does not look like a valid verification ID; paste it exactly as assigned by the curators.</p>
 
   <h2>Verify with each curator</h2>
   <p id="link-note" class="link-note" hidden></p>

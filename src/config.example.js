@@ -19,8 +19,10 @@ window.KYC_CONFIG = {
   curators: [
     {
       name: 'Alain',
-      appId: 'YOUR_MCH_NO',          // "mchNo" / merchant number from dashboard.zk.me
-      programNo: 'YOUR_PROGRAM_NO',  // dashboard.zk.me - Configuration - zkKYC
+      appId: 'YOUR_MCH_NO',            // "mchNo" / merchant number from dashboard.zk.me
+      programNo: 'YOUR_PROGRAM_NO',    // identity (zkKYC) program
+      poaProgramNo: '',                // residence (Proof-of-Address) program; zkMe
+                                       // cannot combine it with zkKYC in one program
       tokenEndpoint: '',
       accessToken: '',
       apiKey: '',

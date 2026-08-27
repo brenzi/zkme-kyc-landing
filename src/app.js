@@ -5,12 +5,23 @@ const $ = (id) => document.getElementById(id)
 
 const state = {
   identifier: '',
-  widgets: new Map(), // curator.appId+programNo -> ZkMeWidget
+  widgets: new Map(), // appId/programNo -> ZkMeWidget
   link: null, // { curator, tokenProvided } when opened via a personal link
 }
 
-function curatorKey(c) {
-  return `${c.appId}/${c.programNo}`
+// zkMe cannot combine zkKYC and Proof-of-Address in one program, so each
+// curator has an identity program (programNo) and optionally a residence
+// program (poaProgramNo). The applicant completes both, one widget launch each.
+function stepsOf(curator) {
+  const steps = [{ key: 'kyc', label: 'Identity', programNo: curator.programNo }]
+  if (curator.poaProgramNo) {
+    steps.push({ key: 'poa', label: 'Residence', programNo: curator.poaProgramNo })
+  }
+  return steps
+}
+
+function stepKey(curator, step) {
+  return `${curator.appId}/${step.programNo}`
 }
 
 // zkMe rejects with plain {code, msg} objects, which String() renders as
@@ -31,10 +42,10 @@ function visibleCurators() {
   return state.link ? [state.link.curator] : []
 }
 
-// Base58 charset sanity check only; exact validity is enforced by the curators
-// against the proposal, not by this page.
-function plausibleAddress(s) {
-  return /^[1-9A-HJ-NP-Za-km-z]{40,60}$/.test(s)
+// Verification IDs are random per-person identifiers assigned by the curators
+// (kv + 24 hex chars); they contain no personal data and are unguessable.
+function plausibleId(s) {
+  return /^kv[0-9a-f]{24}$/.test(s)
 }
 
 function tokenFetcher(curator) {
@@ -67,8 +78,8 @@ function tokenFetcher(curator) {
   }
 }
 
-function getWidget(curator) {
-  const key = curatorKey(curator)
+function getWidget(curator, step) {
+  const key = stepKey(curator, step)
   let w = state.widgets.get(key)
   if (w) return w
   const provider = {
@@ -79,27 +90,27 @@ function getWidget(curator) {
   }
   w = new ZkMeWidget(curator.appId, cfg.appName, cfg.chainId, provider, {
     lv: 'zkKYC',
-    programNo: curator.programNo,
+    programNo: step.programNo,
     mode: 'email',
     theme: 'auto',
     locale: 'en',
   })
-  w.on('kycFinished', (results) => onKycFinished(curator, results))
-  w.on('close', () => refreshStatus(curator))
+  w.on('kycFinished', (results) => onStepFinished(curator, step, results))
+  w.on('close', () => refreshStatus(curator, step))
   state.widgets.set(key, w)
   return w
 }
 
-function onKycFinished(curator, results) {
+function onStepFinished(curator, step, results) {
   const { isGrant, associatedAccount } = results
   const ok = isGrant && associatedAccount?.toLowerCase() === state.identifier.toLowerCase()
-  setStatus(curator, ok ? 'granted' : 'error',
+  setStatus(curator, step, ok ? 'granted' : 'error',
     ok ? null : `Finished but not granted for ${state.identifier}`)
 }
 
-function setStatus(curator, status, detail) {
-  const el = $(`status-${curatorKey(curator)}`)
-  const btn = $(`btn-${curatorKey(curator)}`)
+function setStatus(curator, step, status, detail) {
+  const el = $(`status-${stepKey(curator, step)}`)
+  const btn = $(`btn-${stepKey(curator, step)}`)
   if (!el) return
   el.dataset.status = status
   el.textContent = {
@@ -113,62 +124,69 @@ function setStatus(curator, status, detail) {
   btn.disabled = status === 'granted' || !state.identifier || !hasTokenSource(curator)
 }
 
-async function refreshStatus(curator) {
-  if (!state.identifier) return setStatus(curator, 'unknown')
-  setStatus(curator, 'checking')
+async function refreshStatus(curator, step) {
+  if (!state.identifier) return setStatus(curator, step, 'unknown')
+  setStatus(curator, step, 'checking')
   try {
     const { isGrant } = await verifyKycWithZkMeServices(curator.appId, state.identifier, {
-      programNo: curator.programNo,
+      programNo: step.programNo,
     })
-    setStatus(curator, isGrant ? 'granted' : 'missing')
+    setStatus(curator, step, isGrant ? 'granted' : 'missing')
   } catch (e) {
-    setStatus(curator, 'error', `status check failed: ${errText(e)}`)
+    setStatus(curator, step, 'error', `status check failed: ${errText(e)}`)
   }
 }
 
 function refreshAll() {
-  visibleCurators().forEach(refreshStatus)
+  for (const curator of visibleCurators()) {
+    for (const step of stepsOf(curator)) refreshStatus(curator, step)
+  }
 }
 
 function render() {
   const list = $('curators')
   list.innerHTML = ''
   for (const curator of visibleCurators()) {
-    const li = document.createElement('li')
-    li.className = 'curator'
-    if (state.link) li.classList.add('linked')
-    const btn = document.createElement('button')
-    btn.id = `btn-${curatorKey(curator)}`
-    btn.textContent = `Verify with ${curator.name}`
-    btn.disabled = true
-    if (!hasTokenSource(curator)) {
-      btn.title = 'No session token available for this curator; open the personal link they sent you.'
-    }
-    btn.addEventListener('click', () => {
-      try {
-        getWidget(curator).launch()
-      } catch (e) {
-        setStatus(curator, 'error', errText(e))
+    const steps = stepsOf(curator)
+    for (const [i, step] of steps.entries()) {
+      const li = document.createElement('li')
+      li.className = 'curator'
+      if (state.link) li.classList.add('linked')
+      const btn = document.createElement('button')
+      btn.id = `btn-${stepKey(curator, step)}`
+      btn.textContent = steps.length > 1
+        ? `${i + 1}. ${step.label} check with ${curator.name}`
+        : `Verify with ${curator.name}`
+      btn.disabled = true
+      if (!hasTokenSource(curator)) {
+        btn.title = 'No session token available for this curator; open the personal link they sent you.'
       }
-    })
-    const status = document.createElement('span')
-    status.id = `status-${curatorKey(curator)}`
-    status.className = 'status'
-    status.textContent = 'enter your address first'
-    li.append(btn, status)
-    list.appendChild(li)
+      btn.addEventListener('click', () => {
+        try {
+          getWidget(curator, step).launch()
+        } catch (e) {
+          setStatus(curator, step, 'error', errText(e))
+        }
+      })
+      const status = document.createElement('span')
+      status.id = `status-${stepKey(curator, step)}`
+      status.className = 'status'
+      status.textContent = 'enter your verification ID first'
+      li.append(btn, status)
+      list.appendChild(li)
+    }
   }
 }
 
 // Personal links, minted by a curator (mint-link.mjs):
-//   https://kyc.kusama-vision-pop.eth.limo/#c=<curator name or appId>&t=<accessToken>&a=<payout address>
+//   https://kyc.kusama-vision-pop.eth.limo/#c=<curator name or appId>&t=<accessToken>&id=<verification id>
 // The fragment never reaches the web server. With c present only that
-// curator's button is shown; without t it stays disabled with a warning.
+// curator's steps are shown; without t they stay disabled with a warning.
 function parseLink() {
   const h = new URLSearchParams(location.hash.slice(1))
   const c = h.get('c')
   const t = h.get('t')
-  const a = h.get('a')
+  const a = h.get('id')
   state.link = null
   let note = ''
   if (!c) {
@@ -191,8 +209,8 @@ function parseLink() {
 }
 
 function onIdentifierInput() {
-  const v = $('identifier').value.trim()
-  const ok = plausibleAddress(v)
+  const v = $('identifier').value.trim().toLowerCase()
+  const ok = plausibleId(v)
   $('identifier-hint').hidden = ok || v === ''
   state.identifier = ok ? v : ''
   state.widgets.forEach((w) => w.destroy())

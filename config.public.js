@@ -20,7 +20,8 @@ window.KYC_CONFIG = {
     {
       name: 'brenzi',                // must match the c= value in minted links
       appId: 'M2026082545302140009179261407841',
-      programNo: '202608260001',     // dashboard.zk.me - Configuration - zkKYC, program in "Apply" state
+      programNo: '202608260001',     // identity (zkKYC) program
+      poaProgramNo: '202608270002',  // residence (PoA) program number from the dashboard
       tokenEndpoint: '',
       accessToken: '',
       apiKey: '',

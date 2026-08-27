@@ -1,9 +1,9 @@
 # Kusama Vision KYC landing page (zkMe)
 
 Static page published at `https://kyc.kusama-vision-pop.eth.limo/` (IPFS + ENS,
-see `HOWTO_DEPLOY.md`). Applicants open the personal link a curator minted for
-them and complete zkMe zkKYC once per curator account; without a link the page
-shows no buttons. The page has no backend, stores nothing, and talks only to
+see `HOWTO_DEPLOY.md`). Every beneficial owner of a proposal opens the personal
+link a curator minted for them and completes zkMe zkKYC (and the residence
+check) once per curator account; without a link the page shows no buttons. The page has no backend, stores nothing, and talks only to
 zkMe (widget + public status API). Access tokens are minted locally by each
 curator with `mint-link.mjs`; no key or token lives in the deployed page.
 
@@ -13,7 +13,7 @@ residence layer only. What zkMe collects and what it discloses to each curator
 liveness, uniqueness) is configured per program in each curator's zkMe
 dashboard, not in this page. The page only carries `lv: 'zkKYC'` + the
 program number, uses email login (no wallet connect, no on-chain mint), and
-binds the verification to the applicant's payout address as the zkMe
+binds each verification to a random per-person verification ID as the zkMe
 "unique identifier". Sanctions screening stays with the curators.
 
 ## Build
@@ -40,20 +40,40 @@ a personal link; that is the only supported token flow. Copy `.env.example` to
 `.env` (git-ignored), fill in your API key, mchNo and curator name, then:
 
 ```
-node mint-link.mjs <payout-address>
+node mint-link.mjs <verification-id>
 ```
 
 prints the finished link, e.g.
 
 ```
-https://kyc.kusama-vision-pop.eth.limo/#c=brenzi&t=<accessToken>&a=<payout address>
+https://kyc.kusama-vision-pop.eth.limo/#c=brenzi&t=<accessToken>&id=kv3f9a…
 ```
 
-`c` must match your entry's `name` (or `appId`) in `config.public.js`; `a`
-prefills the payout address. Everything sits in the URL fragment, so neither
+`c` must match your entry's `name` (or `appId`) in `config.public.js`; `id`
+prefills the beneficial owner's verification ID. Everything sits in the URL fragment, so neither
 token nor address ever reaches a web server or its logs. Post the link only in
 the applicant's E2EE Matrix room, with inline URL previews off (a client
 generating previews sends the full URL, fragment included, to its homeserver).
+
+## Verification IDs: one per beneficial owner
+
+A payout address can have several beneficial owners, and every one of them
+must pass KYC, so the zkMe identifier is not the address but a random
+per-person verification ID (`kv` + 24 hex chars, unguessable, no personal
+data). The order is fixed:
+
+1. Curators generate one ID per beneficial owner (`node mint-link.mjs
+   --new-id`) and post them in the applicant's E2EE Matrix room.
+2. The applicant returns a message signed with the destination wallet naming
+   every beneficial owner together with their assigned ID (this doubles as the
+   wallet-control proof and the beneficial-owner declaration).
+3. Only after every curator has verified that signature does each curator mint
+   and post the personal links, one per beneficial owner.
+
+The ID-to-person mapping lives in the signed declaration and the curators'
+records; zkMe only ever sees the opaque ID. A leaked token therefore cannot be
+used to bind a verification to a foreign payout address, and an ID by itself
+identifies nobody.
 
 Token notes:
 
@@ -97,6 +117,10 @@ Token notes:
   own stylesheet)
 - `mint-link.mjs` + `.env.example` - curator-local: mint a token with the
   curator's API key and print the applicant's personal link
+- `query-results.mjs` - curator-local: fetch a beneficial owner's zkMe results
+  by verification ID (KYC status plus boolean verifier values; zkMe never returns
+  name/DOB/country values to cooperators, so identity data for sanctions
+  screening comes from the Matrix-room uploads per the LEGAL process)
 - `config.public.js` - tracked, published runtime config (no secrets)
 - `scripts/deploy.sh`, `HOWTO_DEPLOY.md`, `DEPLOYMENTS.md` - IPFS + ENS
   release pipeline and CID log

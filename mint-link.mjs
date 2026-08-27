@@ -1,6 +1,13 @@
 #!/usr/bin/env node
-// Mint a zkMe access token and print the applicant's personal verification link.
-// Reads .env in this directory; usage: node mint-link.mjs <payout-address>
+// Curator-local tool for verification IDs and personal links.
+// Usage:
+//   node mint-link.mjs --new-id             generate a fresh verification ID
+//                                           (hand out one per beneficial owner)
+//   node mint-link.mjs <verification-id>    mint a token and print the link
+//                                           (only after the wallet-signed
+//                                           declaration naming all owners and
+//                                           their IDs is verified)
+// Reads .env in this directory.
 
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -23,6 +30,12 @@ try {
   process.exit(1)
 }
 
+if (process.argv[2] === '--new-id') {
+  const { randomBytes } = await import('node:crypto')
+  console.log('kv' + randomBytes(12).toString('hex'))
+  process.exit(0)
+}
+
 const { ZKME_API_KEY, ZKME_APP_ID, KYC_CURATOR } = env
 const baseUrl = env.KYC_BASE_URL || 'https://kyc.kusama-vision-pop.eth.limo/'
 if (!ZKME_API_KEY || !ZKME_APP_ID || !KYC_CURATOR) {
@@ -30,9 +43,9 @@ if (!ZKME_API_KEY || !ZKME_APP_ID || !KYC_CURATOR) {
   process.exit(1)
 }
 
-const address = process.argv[2]
-if (!address || !/^[1-9A-HJ-NP-Za-km-z]{40,60}$/.test(address)) {
-  console.error('Usage: node mint-link.mjs <payout-address>   (SS58 address from the proposal)')
+const id = (process.argv[2] || '').toLowerCase()
+if (!/^kv[0-9a-f]{24}$/.test(id)) {
+  console.error('Usage: node mint-link.mjs --new-id | <verification-id>   (kv + 24 hex chars)')
   process.exit(1)
 }
 
@@ -56,5 +69,5 @@ if (!r.ok || j.code !== 80000000 || !j.data?.accessToken) {
   process.exit(1)
 }
 
-const hash = new URLSearchParams({ c: KYC_CURATOR, t: j.data.accessToken, a: address })
+const hash = new URLSearchParams({ c: KYC_CURATOR, t: j.data.accessToken, id })
 console.log(`${baseUrl}#${hash}`)
