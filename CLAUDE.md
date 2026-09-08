@@ -96,6 +96,18 @@ mirrors `/work/kv-pop` (HOWTO_IPFS.md, HOWTO-ENS.md, pin-follower). A custom
 DNS host needs DNSLink + a vhost on a gateway we control; a bare CNAME to
 eth.limo or any public gateway cannot work (TLS + host mapping).
 
+## Jurisdiction denylist (PoA programs, identical for all curators)
+
+North Korea, Iran, Russia, Belarus, Cuba, Syria. Rationale: contract §7.1
+territories are the floor (Cuba and Syria are contract-only); Belarus is the
+one addition forced by the union of the curators' home regimes (Switzerland,
+Canada, Taiwan). Crimea/Donetsk/Luhansk/occupied Zaporizhzhia and Kherson are
+not expressible at country level and remain a manual residence-document rule.
+Nationality never enters the policy, residence only. Listed-persons-only
+regimes (Venezuela, Myanmar, Afghanistan, ...) are deliberately not excluded;
+they are what the curators' SESAM/OpenSanctions screening is for, and Myanmar
+(FATF blacklist) maps to the increased-risk class instead.
+
 ## Rules
 
 - Never publish or commit an apiKey; `.env` is git-ignored and used only by

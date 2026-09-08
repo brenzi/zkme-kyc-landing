@@ -57,6 +57,21 @@ token nor address ever reaches a web server or its logs. Post the link only in
 the applicant's E2EE Matrix room, with inline URL previews off (a client
 generating previews sends the full URL, fragment included, to its homeserver).
 
+### Query results
+
+```
+> node query-results.mjs <id>
+zkKYC for <id> (program 202608260001):
+  status: KYC Passed   completed: 2026-08-27T09:18:10.000Z   zkmeId: fr0qovuvl7ggcKE
+  sanction: true
+  age: true
+  citizenship: true
+  location: not configured in program
+  unique: not configured in program
+Proof-of-Address (program 202608270002):
+  status: Not Started   countryRegion (passes jurisdiction policy): not configured in program
+```
+
 ## Verification IDs: one per beneficial owner
 
 A payout address can have several beneficial owners, and every one of them
@@ -103,11 +118,16 @@ Token notes:
 - Credential reuse across the curator accounts: the applicant should complete
   full KYC once and only re-grant for the other programs; confirm, and confirm
   the per-verification fee applies per grant (about $0.50 each).
-- Selective-disclosure and Jurisdiction Policy configuration per program:
-  each curator's program must be configured identically (disclose name/DOB/
-  country; denylist Iran, North Korea, Cuba, Syria, Crimea, Donetsk, Luhansk,
-  Russia; liveness + uniqueness required) so all curators receive the same
-  result set. This lives in the dashboard, not in this page.
+- Jurisdiction Policy per PoA program: every curator's denylist must be
+  identical, or `countryRegion: true` means different things per curator.
+  Agreed set (contract §7.1 as the floor, union of the Swiss, Canadian and
+  Taiwanese regimes on top): North Korea, Iran, Russia, Belarus, Cuba, Syria.
+  Crimea, Donetsk, Luhansk and the occupied parts of Zaporizhzhia and Kherson
+  cannot be expressed at country level (Ukrainian documents); they stay a
+  manual residence-document rule in the LEGAL process. Ask zkMe whether the
+  policy supports sub-national regions. Syria is territorially eased
+  everywhere since 2025/26 and is droppable only with W3F's written
+  confirmation. Liveness + uniqueness required in the identity program.
 
 ## Files
 
@@ -123,6 +143,9 @@ Token notes:
   by verification ID (KYC status plus boolean verifier values; zkMe never returns
   name/DOB/country values to cooperators, so identity data for sanctions
   screening comes from the Matrix-room uploads per the LEGAL process)
+- `poa-denylist.csv` - the agreed country-level Jurisdiction Policy denylist
+  for every curator's PoA program, with which regime requests each entry
+  (occupied Ukrainian oblasts are not expressible here; see the go-live item)
 - `config.public.js` - tracked, published runtime config (no secrets)
 - `scripts/deploy.sh`, `HOWTO_DEPLOY.md`, `DEPLOYMENTS.md` - IPFS + ENS
   release pipeline and CID log
