@@ -1,7 +1,7 @@
-country,iso2,requested_by,note
-North Korea,KP,contract T+C 7.1;Switzerland;Canada;Taiwan,comprehensive in all curator regimes
-Iran,IR,contract T+C 7.1;Switzerland;Canada,FATF blacklist; broad Swiss and Canadian measures
-Russia,RU,contract T+C 7.1;Switzerland;Canada,Taiwan has export controls only
-Belarus,BY,Switzerland;Canada,not in contract; union of curator home regimes
-Cuba,CU,contract T+C 7.1,no curator home regime sanctions Cuba
-Syria,SY,contract T+C 7.1,territorial sanctions lifted CH 2025 / CA 2026; drop only with W3F written confirmation
+zkme_name,iso2,common_name,requested_by,note
+"Korea, Democratic People's Republic of",KP,North Korea,contract T+C 7.1;Switzerland;Canada;Taiwan,comprehensive in all curator regimes; NOT "Korea; the Republic of" (KR = South Korea)
+"Iran, Islamic Republic of",IR,Iran,contract T+C 7.1;Switzerland;Canada,FATF blacklist; broad Swiss and Canadian measures
+Russian Federation,RU,Russia,contract T+C 7.1;Switzerland;Canada,Taiwan has export controls only
+Belarus,BY,Belarus,Switzerland;Canada,not in contract; union of curator home regimes
+Cuba,CU,Cuba,contract T+C 7.1,no curator home regime sanctions Cuba
+Syrian Arab Republic,SY,Syria,contract T+C 7.1,territorial sanctions lifted CH 2025 / CA 2026; drop only with W3F written confirmation

@@ -75,6 +75,10 @@ else {
   const rows = Array.isArray(poa) ? poa : [poa]
   if (!rows.length) console.log('  no PoA record')
   for (const p of rows) {
-    console.log(`  status: ${p.status}   countryRegion (passes jurisdiction policy): ${p.verifierValues?.countryRegion ?? 'not configured in program'}`)
+    const v = p.verifierValues || {}
+    console.log(`  status: ${p.status}   countryRegion (passes jurisdiction policy): ${v.countryRegion ?? 'not configured in program'}`)
+    if (v.countryRegionCode || v.countryRegionName) {
+      console.log(`  residence country: ${v.countryRegionName ?? '?'} (${v.countryRegionCode ?? '?'})`)
+    }
   }
 }

@@ -140,9 +140,10 @@ Token notes:
 - `mint-link.mjs` + `.env.example` - curator-local: mint a token with the
   curator's API key and print the applicant's personal link
 - `query-results.mjs` - curator-local: fetch a beneficial owner's zkMe results
-  by verification ID (KYC status plus boolean verifier values; zkMe never returns
-  name/DOB/country values to cooperators, so identity data for sanctions
-  screening comes from the Matrix-room uploads per the LEGAL process)
+  by verification ID (KYC status, boolean verifier values, and since the
+  Sep 2026 API upgrade the verified residence country from PoA; zkMe still
+  returns no name/DOB values, so those come from the Matrix-room uploads per
+  the LEGAL process)
 - `poa-denylist.csv` - the agreed country-level Jurisdiction Policy denylist
   for every curator's PoA program, with which regime requests each entry
   (occupied Ukrainian oblasts are not expressible here; see the go-live item)

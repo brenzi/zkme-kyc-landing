@@ -59,14 +59,17 @@ identity + residence only, sanctions screening stays with the curators.
 - **Program lifecycle.** Dashboard: create program -> click the record ->
   Activate/"Apply program" (self-serve, no zkMe human review) -> short
   automated on-chain configuration window -> live.
-- **Cooperator results are booleans only.** `POST https://agw.zk.me/zkseradmin/openapi/queryKycInfoByAddress`
+- **Cooperator results are booleans, plus the PoA residence country since
+  the Sep 2026 API upgrade.** `POST https://agw.zk.me/zkseradmin/openapi/queryKycInfoByAddress`
   (`{mchNo, apiKey, programNo, account, chainId}`; chainId decimal/named like
   `137`, hex rejected; response `data` is an ARRAY) returns `kycStatus` +
-  `verifierValues.{sanction,age,citizenship,location,unique}`;
-  `.../queryPoAInfoByAddress` returns `countryRegion` (passes jurisdiction
-  policy). No name/DOB/country values exist in the self-serve product; the SD
-  operator (code 16) in their credential system could disclose values but is
-  not exposed to cooperators (ask contact@zk.me). `query-results.mjs` wraps
+  `verifierValues.{sanction,age,citizenship,location,unique}` (booleans only,
+  no citizenship country value); `.../queryPoAInfoByAddress` returns
+  `countryRegion` (passes jurisdiction policy) plus `countryRegionCode`
+  (ISO alpha-3, e.g. "CHE") and `countryRegionName`. Name/DOB values still do
+  not exist in the self-serve product; the SD operator (code 16) in their
+  credential system could disclose them but is not exposed to cooperators
+  (ask contact@zk.me). `query-results.mjs` wraps
   both endpoints. Also `.../kyc/getUsersList` lists users per program.
 - **Public status endpoint** (no auth; good for debugging config):
   `POST https://nest-api.zk.me/api/grant/check_v2` with
@@ -122,7 +125,9 @@ they are what the curators' SESAM/OpenSanctions screening is for, and Myanmar
 
 ## References
 
-- Process + legal basis: `/work/LEGAL/kusama-vision-curator-run-process.md`,
+- Process + legal basis: `/work/LEGAL/kusama-vision-curator-run-process-v2-zkme.md`
+  (zkMe-maximised, the one this page serves; v1 is the fallback),
+  `/work/LEGAL/kusama-vision-curator-run-process.md`,
   `/work/LEGAL/zkme-evaluation-report.md`,
   `/work/LEGAL/kusama-vision-curator-compliance-report.md`
 - Deployment pattern source: `/work/kv-pop/`
