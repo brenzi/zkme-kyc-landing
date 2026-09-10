@@ -52,16 +52,48 @@
   <h1><span>Kusama Vision</span> applicant verification</h1>
   <p class="muted">Identity and residence verification for the Kusama Vision Program, via zkMe.</p>
 
-  <h2>What is verified, and nothing else</h2>
+  <h2>What zkMe verifies</h2>
   <ul>
-    <li>your verified <strong>name, date of birth and country</strong> (shared with the curators)</li>
-    <li>your <strong>country of residence is not embargoed</strong> (yes/no only)</li>
-    <li>you are a <strong>live person holding your own ID</strong> (yes/no only)</li>
-    <li>you have <strong>one credential per person</strong> (yes/no only)</li>
+    <li>your <strong>identity</strong>: a genuine government ID plus a live selfie, so you are its holder</li>
+    <li>your <strong>residence</strong>: an address document not older than 90 days</li>
   </ul>
-  <p class="muted">Your documents and selfie go to zkMe, never to the curators or this page.
-  This page stores nothing, has no backend, and talks only to zkMe. Sanctions screening is done
-  separately by the curators; nothing here replaces it.</p>
+
+  <h2>What the curators receive, and what they never see</h2>
+  <p>The curators receive, tied only to your anonymous verification ID:</p>
+  <ul>
+    <li>your verified <strong>country of residence</strong> (the country only, e.g. "Switzerland")</li>
+    <li>your <strong>country of citizenship</strong> (shown to curators in zkMe's dashboard)</li>
+    <li><strong>pass/fail results</strong>: residence outside the embargoed countries, identity and
+        liveness passed, and zkMe's own sanctions pre-check</li>
+  </ul>
+  <p>The curators never see your <strong>name, date of birth, address, documents or
+  selfie</strong> through zkMe; those stay with zkMe. Identity details the curators need for their
+  own sanctions screening are provided separately in your Matrix room, not through this page.</p>
+  <p>Depending on your case, the curators may additionally need, always announced in your
+  Matrix room and never enabled silently by this page:</p>
+  <ul>
+    <li>for some countries, a <strong>stronger proof of residence</strong>: the curators send a
+        letter with a code to your address and you post the code back;</li>
+    <li>a <strong>repeat of the sanctions screening before each payout</strong>;</li>
+    <li>your consent to zkMe <strong>selectively disclosing your verified legal name and date of
+        birth</strong> to the curators for their manual sanctions screening.</li>
+  </ul>
+  <h2>Where your raw data ends up, and the long-term risk</h2>
+  <p>Be clear about what you are agreeing to. Your ID photos, selfie and address document are
+  <strong>uploaded to and processed on zkMe's servers</strong>; this is not an on-device-only
+  system. To meet legal retention duties, zkMe then keeps your raw verification materials,
+  encrypted, in its <a href="https://docs.zk.me/hub/how-built/id-infra/zkvault">zkVault</a> on
+  <strong>public decentralized storage (IPFS)</strong>. Decryption requires the cooperation of
+  multiple key holders and is intended for cases such as a lawful order; no single party can
+  decrypt alone. The linked zkMe documentation explains the mechanism and what is stored.</p>
+  <p>The blunt part: ciphertexts on a public network can be <strong>copied by anyone, today, and
+  kept forever</strong>. zkVault's key encryption is elliptic-curve cryptography, which future
+  quantum computers are expected to break. If that happens, archived copies of your passport data
+  could become decryptable. Treat the confidentiality of what you upload as
+  <strong>time-limited</strong>, not permanent. If this is not acceptable to you, say so in your
+  Matrix room: a manual verification process without zkMe exists.</p>
+  <p class="muted">This page itself stores nothing, has no backend, and talks only to zkMe.
+  Sanctions screening is done separately by the curators; nothing here replaces it.</p>
 
   <h2>How it works</h2>
   <ol>

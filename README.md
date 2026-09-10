@@ -127,7 +127,10 @@ Token notes:
   manual residence-document rule in the LEGAL process. Ask zkMe whether the
   policy supports sub-national regions. Syria is territorially eased
   everywhere since 2025/26 and is droppable only with W3F's written
-  confirmation. Liveness + uniqueness required in the identity program.
+  confirmation. Liveness required in the identity program; uniqueness is
+  deliberately not assessed (dedup is the process's name-plus-DOB check).
+  The dashboard shows the country of citizenship to the curator even though
+  the API returns only a boolean; the landing page discloses this.
 
 ## Files
 
