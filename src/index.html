@@ -21,6 +21,9 @@
   h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
   h1 span { color: var(--accent); }
   h2 { font-size: 1.05rem; margin: 2rem 0 .5rem; }
+  details { margin: 2rem 0; }
+  details summary { font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  details[open] summary { margin-bottom: .5rem; }
   p, li { color: var(--fg); }
   .muted { color: var(--muted); font-size: .9rem; }
   label { display: block; font-weight: 600; margin: 1.5rem 0 .3rem; }
@@ -58,7 +61,8 @@
     <li>your <strong>residence</strong>: an address document not older than 90 days</li>
   </ul>
 
-  <h2>What the curators receive, and what they never see</h2>
+  <details>
+  <summary>What the curators receive, and what they never see</summary>
   <p>The curators receive, tied only to your anonymous verification ID:</p>
   <ul>
     <li>your verified <strong>country of residence</strong> (the country only, e.g. "Switzerland")</li>
@@ -78,7 +82,10 @@
     <li>your consent to zkMe <strong>selectively disclosing your verified legal name and date of
         birth</strong> to the curators for their manual sanctions screening.</li>
   </ul>
-  <h2>Where your raw data ends up, and the long-term risk</h2>
+  </details>
+
+  <details>
+  <summary>Where your raw data ends up, and the long-term risk</summary>
   <p>Be clear about what you are agreeing to. Your ID photos, selfie and address document are
   <strong>uploaded to and processed on zkMe's servers</strong>; this is not an on-device-only
   system. To meet legal retention duties, zkMe then keeps your raw verification materials,
@@ -92,8 +99,13 @@
   could become decryptable. Treat the confidentiality of what you upload as
   <strong>time-limited</strong>, not permanent. If this is not acceptable to you, say so in your
   Matrix room: a manual verification process without zkMe exists.</p>
+  <p>The flip side, and zkMe's actual differentiator: this upload happens <strong>once, at
+  issuance</strong>. Afterwards your credential lives on your device, every proof is generated
+  locally, and your raw data is never transmitted again, not to zkMe, not to the curators, not
+  to anyone.</p>
   <p class="muted">This page itself stores nothing, has no backend, and talks only to zkMe.
   Sanctions screening is done separately by the curators; nothing here replaces it.</p>
+  </details>
 
   <h2>How it works</h2>
   <ol>
